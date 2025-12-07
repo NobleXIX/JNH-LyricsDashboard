@@ -2,8 +2,8 @@ name: Update data and dashboard
 
 on:
   schedule:
-    - cron: "0 12 * * 6"   # every Saturday at noon UTC
-  workflow_dispatch:        # allow manual runs from the Actions tab
+    - cron: "0 12 * * 6"   # once per week
+  workflow_dispatch:        # allow manual runs
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
 
-      - name: Install packages, build dataset, render dashboard
+      - name: Install packages + build dataset + render dashboard
         run: |
           Rscript - <<'EOF'
           install.packages(
@@ -38,7 +38,7 @@ jobs:
           source("R/build_dataset.R")
           build_dataset()
 
-          # Render dashboard to index.html
+          # Render dashboard
           rmarkdown::render("dashboard.Rmd", output_file = "index.html")
           EOF
 
@@ -47,5 +47,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add data_raw data_clean data_db index.html || echo "Nothing to add"
-          git commit -m "Automated data + dashboard update" || echo "No changes to commit"
+          git commit -m "Automated data + dashboard update" || echo "No changes"
           git push || echo "No changes to push"
