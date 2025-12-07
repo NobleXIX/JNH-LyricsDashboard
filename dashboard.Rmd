@@ -1,0 +1,16 @@
+---
+title: "Lyrics & Emotion Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(flexdashboard)
+library(readr)
+
+tidy_words <- read_csv("data_clean/tidy_words.csv")
+sentiment  <- read_csv("data_clean/sentiment.csv")
+emotions   <- read_csv("data_clean/emotions.csv")
