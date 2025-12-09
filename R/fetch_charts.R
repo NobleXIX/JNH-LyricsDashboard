@@ -1,25 +1,42 @@
-library(readr)
+library(jsonlite)
 library(dplyr)
 
-# Use Spotify's global daily chart CSV as the "chart" source
+# Use Apple iTunes Top Songs RSS (JSON) as "chart" source
 fetch_billboard_hot100 <- function(chart_date = Sys.Date()) {
-  url <- "https://spotifycharts.com/regional/global/daily/latest/download"
+  url <- "https://itunes.apple.com/us/rss/topsongs/limit=50/json"
   
-  # The file is semicolon-separated (;) so we use read_csv2()
-  # Skip the first line (description), then read the data
-  df <- readr::read_csv2(url, skip = 1, show_col_types = FALSE)
-  # Expected columns (or similar): Position, Track Name, Artist, Streams, URL
+  # Get and flatten JSON
+  json <- jsonlite::fromJSON(url, flatten = TRUE)
+  entries <- json$feed$entry
   
-  # If the structure isn't what we expect, fail loudly
-  if (ncol(df) < 4) {
-    stop("Spotify chart download did not return at least 4 columns. Check the source format.")
+  if (is.null(entries) || nrow(entries) == 0) {
+    stop("iTunes top songs feed returned no entries. Check the source format or URL.")
+  }
+  
+  cols <- names(entries)
+  
+  # Try to find appropriate columns for track + artist
+  track_col <- dplyr::case_when(
+    "im.name.label" %in% cols   ~ "im.name.label",
+    "title.label"   %in% cols   ~ "title.label",
+    TRUE                        ~ NA_character_
+  )
+  
+  artist_col <- dplyr::case_when(
+    "im.artist.label" %in% cols ~ "im.artist.label",
+    "artist.label"    %in% cols ~ "artist.label",
+    TRUE                        ~ NA_character_
+  )
+  
+  if (is.na(track_col) || is.na(artist_col)) {
+    stop("Unexpected iTunes JSON structure: could not find track or artist columns.")
   }
   
   tibble::tibble(
-    rank       = df[[1]],  # position
-    track      = df[[2]],  # track name
-    artist     = df[[3]],  # artist
-    streams    = df[[4]],  # streams
+    rank       = seq_len(nrow(entries)),
+    track      = entries[[track_col]],
+    artist     = entries[[artist_col]],
+    streams    = NA_integer_,  # we don't have streams here, just rank
     chart_date = as.Date(chart_date)
   )
 }
