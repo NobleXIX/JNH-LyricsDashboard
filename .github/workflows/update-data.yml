@@ -21,9 +21,14 @@ jobs:
           Rscript - <<'EOF'
           install.packages(
             c(
-              "tidyverse",
+              "dplyr",
+              "readr",
+              "tidyr",
+              "stringr",
+              "tibble",
+              "purrr",
+              "ggplot2",
               "tidytext",
-              "textdata",
               "jsonlite",
               "RSQLite",
               "DBI",
