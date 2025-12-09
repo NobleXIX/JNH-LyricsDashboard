@@ -24,7 +24,6 @@ jobs:
               "tidyverse",
               "tidytext",
               "textdata",
-              "httr2",
               "jsonlite",
               "RSQLite",
               "DBI",
