@@ -5,18 +5,21 @@ library(dplyr)
 fetch_billboard_hot100 <- function(chart_date = Sys.Date()) {
   url <- "https://spotifycharts.com/regional/global/daily/latest/download"
   
-  # Skip the first line of description, then read the CSV
-  df <- readr::read_csv(url, skip = 1, show_col_types = FALSE)
-  # We expect: column 1 = position, 2 = track name, 3 = artist, 4 = streams
+  # The file is semicolon-separated (;) so we use read_csv2()
+  # Skip the first line (description), then read the data
+  df <- readr::read_csv2(url, skip = 1, show_col_types = FALSE)
+  # Expected columns (or similar): Position, Track Name, Artist, Streams, URL
   
-  # Just use the first 4 columns by index, regardless of their names
-  df <- df |> dplyr::select(1:4)
+  # If the structure isn't what we expect, fail loudly
+  if (ncol(df) < 4) {
+    stop("Spotify chart download did not return at least 4 columns. Check the source format.")
+  }
   
   tibble::tibble(
-    rank       = df[[1]],
-    track      = df[[2]],
-    artist     = df[[3]],
-    streams    = df[[4]],
+    rank       = df[[1]],  # position
+    track      = df[[2]],  # track name
+    artist     = df[[3]],  # artist
+    streams    = df[[4]],  # streams
     chart_date = as.Date(chart_date)
   )
 }
