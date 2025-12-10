@@ -7,7 +7,6 @@ get_lyrics <- function(artist, track) {
 
   url <- paste0("https://api.lyrics.ovh/v1/", artist_enc, "/", track_enc)
 
-  # Use jsonlite directly, no httr2 needed
   resp <- tryCatch(
     jsonlite::fromJSON(url),
     error = function(e) NULL
