@@ -2,8 +2,11 @@ name: Update data and dashboard
 
 on:
   schedule:
-    - cron: "0 12 * * 6"   # once per week
-  workflow_dispatch:        # allow manual runs
+    - cron: "0 12 * * 6"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
 
 jobs:
   build:
