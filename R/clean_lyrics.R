@@ -9,7 +9,7 @@ clean_and_score_lyrics <- function(lyrics_df) {
     stop("clean_and_score_lyrics(): column 'lyrics' not found in lyrics_df", call. = FALSE)
   }
   
-  # Only keep rows with actual lyrics
+  # Only keep rows with lyrics
   lyrics_df <- lyrics_df |> filter(!is.na(lyrics))
 
   # Tokenize words from lyrics
@@ -30,7 +30,6 @@ clean_and_score_lyrics <- function(lyrics_df) {
       values_fill = 0
     )
 
-  # We return just tidy words and sentiment
   list(
     tidy_words = tidy,
     sentiment  = sentiment_scores
