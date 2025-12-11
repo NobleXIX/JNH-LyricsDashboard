@@ -18,3 +18,38 @@ library(stringr)
 # These CSVs are created by build_dataset() via GitHub Actions
 tidy_words <- read_csv("data_clean/tidy_words.csv", show_col_types = FALSE)
 sentiment  <- read_csv("data_clean/sentiment.csv", show_col_types = FALSE)
+
+cat("Number of songs with sentiment scores:", nrow(sentiment), "\n")
+cat("Number of tidy word tokens:", nrow(tidy_words), "\n")
+
+sentiment |>
+tidyr::pivot_longer(cols = c(positive, negative), names_to = "sentiment") |>
+dplyr::group_by(sentiment) |>
+dplyr::summarise(total = sum(value, na.rm = TRUE), .groups = "drop") |>
+ggplot(aes(x = sentiment, y = total, fill = sentiment)) +
+geom_col() +
+labs(
+title = "Overall Sentiment (Bing Lexicon)",
+x = NULL,
+y = "Total word count"
+) +
+theme_minimal()
+
+first_artist <- sentiment$artist[1]
+first_track  <- sentiment$track[1]
+
+tidy_words |>
+dplyr::filter(artist == first_artist, track == first_track) |>
+dplyr::count(word, sort = TRUE) |>
+dplyr::slice_head(n = 15) |>
+ggplot(aes(x = reorder(word, n), y = n)) +
+geom_col() +
+coord_flip() +
+labs(
+title = paste("Top Words in", first_track, "by", first_artist),
+x = NULL,
+y = "Frequency"
+) +
+theme_minimal()
+
+```
