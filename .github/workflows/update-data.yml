@@ -24,7 +24,7 @@ jobs:
         with:
           pandoc-version: '3.1.7'   # any recent version is fine
 
-      - name: Install packages + build dataset + render dashboard
+      - name: Install packages + build dataset
         run: |
           Rscript - <<'EOF'
           install.packages(
@@ -37,23 +37,20 @@ jobs:
               "purrr",
               "ggplot2",
               "tidytext",
-              "jsonlite",
-              "rmarkdown",
-              "flexdashboard"
+              "jsonlite"
             ),
             repos = "https://cloud.r-project.org"
           )
 
           source("R/build_dataset.R")
           build_dataset()
-
-          rmarkdown::render("dashboard.Rmd", output_file = "index.html")
           EOF
 
-      - name: Commit results
+      - name: Commit data results
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add data_raw data_clean index.html || echo "Nothing to add"
-          git commit -m "Automated data + dashboard update" || echo "No changes"
+          git add data_raw data_clean || echo "Nothing to add"
+          git commit -m "Automated data update" || echo "No changes"
           git push || echo "No changes to push"
+
