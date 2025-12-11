@@ -22,6 +22,16 @@ sentiment  <- read_csv("data_clean/sentiment.csv", show_col_types = FALSE)
 cat("Number of songs with sentiment scores:", nrow(sentiment), "\n")
 cat("Number of tidy word tokens:", nrow(tidy_words), "\n")
 
+# Only plot if 'positive' and 'negative' columns exist
+
+if (!all(c("positive", "negative") %in% names(sentiment))) {
+ggplot() +
+theme_void() +
+labs(
+title = "No sentiment data available yet",
+subtitle = "Positive/negative columns not found in sentiment table."
+)
+} else {
 sentiment |>
 tidyr::pivot_longer(cols = c(positive, negative), names_to = "sentiment") |>
 dplyr::group_by(sentiment) |>
@@ -34,7 +44,16 @@ x = NULL,
 y = "Total word count"
 ) +
 theme_minimal()
+}
 
+if (nrow(sentiment) == 0) {
+ggplot() +
+theme_void() +
+labs(
+title = "No songs with sentiment scores yet",
+subtitle = "Try re-running the data update when the APIs are more responsive."
+)
+} else {
 first_artist <- sentiment$artist[1]
 first_track  <- sentiment$track[1]
 
@@ -51,4 +70,5 @@ x = NULL,
 y = "Frequency"
 ) +
 theme_minimal()
+}
 ```
