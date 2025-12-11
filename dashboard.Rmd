@@ -51,5 +51,4 @@ x = NULL,
 y = "Frequency"
 ) +
 theme_minimal()
-
 ```
