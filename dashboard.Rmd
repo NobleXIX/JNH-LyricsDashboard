@@ -4,6 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     vertical_layout: fill
+    self_contained: true
 ---
 
 ```{r setup, include=FALSE}
