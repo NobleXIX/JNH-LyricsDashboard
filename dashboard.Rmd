@@ -19,6 +19,7 @@ library(stringr)
 tidy_words <- read_csv("data_clean/tidy_words.csv", show_col_types = FALSE)
 sentiment  <- read_csv("data_clean/sentiment.csv", show_col_types = FALSE)
 
+cat("Hello from the dashboard bro!\n")
 cat("Number of songs with sentiment scores:", nrow(sentiment), "\n")
 cat("Number of tidy word tokens:", nrow(tidy_words), "\n")
 
